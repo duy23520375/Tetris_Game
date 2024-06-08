@@ -12,6 +12,7 @@ clock = pygame.time.Clock()
 
 score_font = pygame.font.Font("freesansbold.ttf", 35)
 start_font = pygame.font.Font("freesansbold.ttf", 50)
+tutorial_font = pygame.font.Font("freesansbold.ttf", 25)
 
 background_image = pygame.image.load("asset/tetrisscreen.png")
 
@@ -44,22 +45,36 @@ def draw_start_screen():
     screen.blit(start_surface, start_rect)
     screen.blit(tutorial_surface, tutorial_rect)
     return start_rect, tutorial_rect
+
 def draw_tutorial_screen():
     """
     Vẽ màn hình hướng dẫn của trò chơi.
     """
-    screen.blit(pygame.image.load("asset/tutorial_pic.png"), (0, 0))
+    screen.fill((255, 255, 153))
+    welcome_surface = start_font.render("Welcome to Tetris ", True, (0, 0, 204))
+    screen.blit(welcome_surface, welcome_surface.get_rect(center=(275, 50)))
+
     tutorial_text = [
         "Use arrow keys to move",
         "Space to rotate",
         "Down to speed up",
         "Press Esc to go back"
     ]
-    y = 200
-    for line in tutorial_text:
-        text_surface = score_font.render(line, True, "green")
+    tutorial_images = [
+        pygame.image.load("asset/arrow_keys.png"),
+        pygame.image.load("asset/space_key.png"),
+        pygame.image.load("asset/down_key.png"),
+        pygame.image.load("asset/esc_key.png")
+    ]
+    y = 150
+    for i, line in enumerate(tutorial_text):
+        text_surface = tutorial_font.render(line, True, (0, 0, 204))
+        image = tutorial_images[i]
         screen.blit(text_surface, (50, y))
-        y += 50
+        screen.blit(image, (370, y-20))
+        y += 70
+    enjoy_surface = start_font.render("Enjoy the game!", True, (0, 0, 204))
+    screen.blit(enjoy_surface, enjoy_surface.get_rect(center=(275, 500)))
 running = True
 while running:
     for event in pygame.event.get():
@@ -121,4 +136,3 @@ while running:
             screen.blit(score_font.render("Press Space to Restart", True, "white"), (90, 300))
     pygame.display.update()
     clock.tick(60)
-
