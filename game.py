@@ -19,13 +19,9 @@ class Game:
         highest_score (int): Điểm cao nhất đạt được.
         level (int): Mức độ hiện tại của trò chơi.
         lines_cleared (int): Số dòng đã xóa.
-        bomb_image (Surface): Hình ảnh của bom.
-        bomb_explosion_image (Surface): Hình ảnh của vụ nổ bom.
-        freeze_image (Surface): Hình ảnh của hiệu ứng đóng băng.
         next_special_event_score (int): Điểm số tiếp theo để kích hoạt sự kiện đặc biệt.
         special_event_toggle (bool): Trạng thái chuyển đổi giữa bom và đóng băng.
         background_music (Sound): Nhạc nền của trò chơi.
-        gameover_music (Sound): Nhạc kết thúc trò chơi.
     Phương thức:
         random_block()
         draw(screen)
@@ -53,14 +49,8 @@ class Game:
         self.highest_score = 0
         self.level = 1
         self.lines_cleared = 0
-
         self.background_music = pygame.mixer.Sound("asset/tetris_theme.mp3")
         self.background_music.play(-1)
-
-        self.gameover_music = pygame.mixer.Sound("asset/game-over.mp3")
-        self.bomb_image = pygame.image.load("asset/bomb.png")
-        self.bomb_explosion_image = pygame.image.load("asset/explosion.png")
-        self.freeze_image = pygame.image.load("asset/snowflake.png")
         self.next_special_event_score = 500
         self.special_event_toggle = True
 
@@ -146,8 +136,8 @@ class Game:
         self.check_special_event()
         if self.current_block.check_collision(self.grid):
             self.game_over = True
-            self.background_music.stop()  # Stop the background music
-            self.gameover_music.play()  # Play the game-over music
+            self.background_music.stop()
+            pygame.mixer.Sound("asset/game-over.mp3").play()
             self.update_highest_score()
 
     def reset(self):
@@ -166,7 +156,6 @@ class Game:
         self.next_special_event_score = 500
         self.special_event_toggle = True
         pygame.time.set_timer(GAME_UPDATE, 200)
-        self.gameover_music.stop()
         self.background_music.play(-1)
 
     def get_score(self, line_cleared):
@@ -177,7 +166,7 @@ class Game:
             line_cleared (int): Số dòng đã xóa.
         """
         if line_cleared == 1:
-            self.score += 100
+            self.score += 500
             pygame.mixer.Sound("asset/game-start-6104.mp3").play()
         elif line_cleared == 2:
             self.score += 200
@@ -221,15 +210,15 @@ class Game:
         Kích hoạt hiệu ứng bom, xóa tất cả các dòng và thêm điểm.
         """
         screen = pygame.display.get_surface()
-        bomb_rect = self.bomb_image.get_rect(center=(150, -50))
-        explosion_rect = self.bomb_explosion_image.get_rect(center=(250, 325))
+        bomb_rect = pygame.image.load("asset/bomb.png").get_rect(center=(150, -50))
+        explosion_rect = pygame.image.load("asset/explosion.png").get_rect(center=(250, 325))
         for y in range(-50, 325, 5):
             bomb_rect.centery = y
-            screen.blit(self.bomb_image, bomb_rect)
+            screen.blit(pygame.image.load("asset/bomb.png"), bomb_rect)
             pygame.display.flip()
             pygame.time.delay(10)
         pygame.mixer.Sound("asset/explosion-42132.mp3").play()
-        screen.blit(self.bomb_explosion_image, explosion_rect)
+        screen.blit(pygame.image.load("asset/explosion.png"), explosion_rect)
         pygame.display.flip()
         pygame.time.delay(300)
         font = pygame.font.Font(None, 50)
@@ -249,15 +238,15 @@ class Game:
         self.is_frozen = True
         pygame.time.set_timer(GAME_UPDATE, 800)
         screen = pygame.display.get_surface()
-        freeze_rect = self.freeze_image.get_rect(center=(250, 325))
+        freeze_rect = pygame.image.load("asset/snowflake.png").get_rect(center=(250, 225))
         for alpha in range(0, 256, 5):
-            self.freeze_image.set_alpha(alpha)
-            screen.blit(self.freeze_image, freeze_rect)
+            pygame.image.load("asset/snowflake.png").set_alpha(alpha)
+            screen.blit(pygame.image.load("asset/snowflake.png"), freeze_rect)
             pygame.display.flip()
             pygame.time.delay(10)
         pygame.mixer.Sound("asset/snow.mp3").play()
         font = pygame.font.Font(None, 50)
         text_surface = font.render("Freeze triggered!", True, (0, 0, 255))
-        screen.blit(text_surface, (150, 400))
+        screen.blit(text_surface, (120, 350))
         pygame.display.flip()
         pygame.time.delay(1000)
